@@ -1,1 +1,0 @@
-from pyoo.pyoo import OdpsConnector, PostgreSQLConnector, MySQLConnector, ChatBot

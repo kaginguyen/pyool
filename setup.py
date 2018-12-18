@@ -1,15 +1,15 @@
 from distutils.core import setup
 setup(
-  name = 'pyoo',         # How you named your package folder (MyLib)
-  packages = ['pyoo'],   # Chose the same as "name"
+  name = 'pyool',         # How you named your package folder (MyLib)
+  packages = ['pyool'],   # Chose the same as "name"
   version = '0.0.1',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Python package for Optimized ODPS ',   # Give a short description about your library
   author = 'Loc Nguyen',                   # Type in your name
-  author_email = 'huuloc.nguyen@lazada.vn',      # Type in your E-Mail
-  url = 'https://github.com/locnguyen14061996/pyoo',   # Provide either the link to your github or to your website
+  author_email = 'loc.nguyen14061996@gmail.com',      # Type in your E-Mail
+  url = 'https://github.com/locnguyen14061996/pyool',   # Provide either the link to your github or to your website
   download_url = 'https://github.com/locnguyen14061996/pyoo/archive/0.0.1.tar.gz',    # I explain this later on
-  keywords = ['Python', 'ODPS', 'pyoo'],   # Keywords that define your package best
+  keywords = ['Python', 'ODPS', 'pyool'],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
           'odps',
           'psycopg2',
