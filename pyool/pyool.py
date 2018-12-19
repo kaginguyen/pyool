@@ -33,7 +33,7 @@ class OdpsConnector:
 
     def extract_header(self, csv_file_path): 
         with open(csv_file_path, "r", newline = "") as file:
-            reader = file.read()
+            reader = csv.reader(file)
             header = ",".join(next(reader))
 
         return header 
@@ -67,14 +67,11 @@ class OdpsConnector:
         return query 
 
 
-    def dump_to_csv(self, query, filename = None, storage_path = None): 
+    def dump_to_csv(self, query, storage_path, filename = None): 
         if not filename:
             filename = str(uuid.uuid4())
 
         filename = filename + ".csv"
-
-        if not storage_path:
-            storage_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "storage\\tmp\\")
 
         filepath = os.path.join(storage_path, filename)
 
@@ -128,7 +125,7 @@ class PostgreSQLConnector:
 
     def extract_header(self, csv_file_path): 
         with open(csv_file_path, "r", newline = "") as file:
-            reader = file.read()
+            reader = csv.reader(file)
             header = ",".join(next(reader))
 
         return header 
@@ -211,7 +208,7 @@ class MySQLConnector:
 
     def extract_header(self, csv_file_path): 
         with open(csv_file_path, "r", newline = "") as file:
-            reader = file.read()
+            reader = csv.reader(file)
             header = ",".join(next(reader))
 
         return header 
