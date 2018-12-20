@@ -191,7 +191,7 @@ class MySQLConnector:
 
     def connect(self, db_name, host, port, user, password): 
         self.connection = mysql.connector.connect(
-                                                    db_name = db_name,
+                                                    database = db_name,
                                                     host = host,
                                                     port = port,
                                                     user = user,
