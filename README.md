@@ -19,7 +19,7 @@ and other issues can be resolved as well as updates.
 
 Simply open Command Prompt and input:
 
-> > pip install pyool 
+> pip install pyool 
 
   
 ## Quick Tutorial 
