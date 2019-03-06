@@ -89,7 +89,9 @@ Uploading data onto the Database cant be simpler than this, here is how:
 `postgre_db.uploadCsv("./your/file/path", "your_schema.your_table", your_file_header, remove_file = True, truncate = False)`
 
 
-If you have your data from ODPS, then the function dump_to_csv will return the file path which is convenient to use here. And it is recommended that you get your CSV file header with extract_header function to use in the uploadCSV here. Another note, remove_file will remove the CSV file so that you dont have to do it yourself everytime, and __truncate will TRUNCATE the table before uploading_ so be careful.__
+If you have your data from ODPS, then the function dump_to_csv will return the file path which is convenient to use here. And it is recommended that you get your CSV file header with extract_header function to use in the uploadCSV here. 
+
+Another note, remove_file will remove the CSV file so that you dont have to do it yourself everytime, and **truncate will TRUNCATE the table before uploading_ so be careful.**
 
 
 
