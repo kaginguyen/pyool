@@ -30,7 +30,7 @@ In order to work with ODPS Database, let start by importing OdpsConnector and st
 from pyool import OdpsConnector
 
 odps = OdpsConnector()
-odps.connect(accessID = "", accessKey = "", project = "", endPoint = "", tunnelEndPoint = "")
+odps.connect(accessId = "", accessKey = "", project = "", endPoint = "", tunnelEndPoint = "")
 ```
 
 In order to connect, user needs to have Access ID, Access Key and provide Project name, a specific End Point and Tunnel End Point
