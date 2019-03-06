@@ -48,7 +48,7 @@ If you really need to extract the data from your ODPS query, let use another fun
 Storage Path is required to use this function, as the result, a CSV file will be created with all the result of your query.
 
 
-The returning path of the file is returned as the result of dump_to_csv, so from that, you can use for further interaction, such as extracting header from the file so you can upload it onto other Database. 
+The path of the downloaded file is returned as the result of dump_to_csv, so from that, you can use for further interaction, such as extracting header from the file so you can upload it onto other Database. 
 
 To do that, here is a simple code to do that:
 
@@ -91,7 +91,7 @@ Uploading data onto the Database cant be simpler than this, here is how:
 
 If you have your data from ODPS, then the function dump_to_csv will return the file path which is convenient to use here. And it is recommended that you get your CSV file header with extract_header function to use in the uploadCSV here. 
 
-Another note, remove_file will remove the CSV file so that you dont have to do it yourself everytime, and **truncate will TRUNCATE the table before uploading_ so be careful.**
+Another note, remove_file will remove the CSV file so that you dont have to do it yourself everytime, and **truncate will TRUNCATE the table before uploading so be careful.**
 
 
 
