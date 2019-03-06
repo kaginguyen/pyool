@@ -26,9 +26,9 @@ Simply open Command Prompt and input:
 ### OdpsConnector
 In order to work with ODPS Database, let start by importing OdpsConnector and start a connection. 
 
-`from pyool import OdpsConnector
+`from pyool import OdpsConnector`
 
-odps = OdpsConnector()
+`odps = OdpsConnector()`
 
-odps.connect(accessID = "", accessKey = "", project = "", endPoint = "", tunnelEndPoint = "")`
+`odps.connect(accessID = "", accessKey = "", project = "", endPoint = "", tunnelEndPoint = "")`
 
