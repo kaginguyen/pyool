@@ -19,7 +19,14 @@ and other issues can be resolved as well as updates.
 
 Simply open Command Prompt and input:
 
-> pip install pyool 
+`pip install pyool`
 
   
 ## Quick Tutorial 
+### OdpsConnector
+In order to work with ODPS Database, let start by importing OdpsConnector and start a connection. 
+
+`from pyool import OdpsConnector`
+`odps = OdpsConnector()`
+`odps.connect(accessID = "", accessKey = "", project = "", endPoint = "", tunnelEndPoint = "")`
+
