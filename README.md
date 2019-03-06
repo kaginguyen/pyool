@@ -28,7 +28,31 @@ In order to work with ODPS Database, let start by importing OdpsConnector and st
 
 ```
 from pyool import OdpsConnector
+
 odps = OdpsConnector()
 odps.connect(accessID = "", accessKey = "", project = "", endPoint = "", tunnelEndPoint = "")
 ```
+
+In order to connect, user needs to have Access ID, Access Key and provide Project name, a specific End Point and Tunnel End Point
+
+After having all the information, now is the time to run the query: 
+
+`odps.run_query("SELECT 'foo' AS data")`
+
+If the query can run, then we already successfully implement a simple script to run query on ODPS database.
+
+If you really need to extract the data from your ODPS query, let use another function: 
+
+`odps.dump_to_csv("SELECT 'foo' AS data", storage_path = "./your/local/file/path")` 
+
+Storage Path is required to use this function, as the result, a CSV file will be created with all the result of your query.
+
+The returning path of the file is returned as the result of dump_to_csv, so from that, you can use for further interaction, such as extracting header from the file so you can upload it onto other Database. 
+
+To do that, here is a simple code to do that:
+
+```
+file_path = odps.dump_to_csv("SELECT 'foo' AS data", storage_path = "./your/local/file/path")
+file_header = odps.extract_header(file_path) 
+``` 
 
