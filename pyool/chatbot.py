@@ -6,13 +6,13 @@ import time
 
 class ChatBot: 
 
-    def send_markdown(self, payload, access_token): 
+    def send_markdown(self, payload, access_token, retry_time = 3, buffering = 5): 
         url = "https://oapi.dingtalk.com/robot/send?access_token=" + str(access_token)  
         headers = {"Content-Type": "application/json;charset=utf-8"}
 
-        attemps = 0 
+        attemps = 1 
 
-        while attemps < 3: 
+        while attemps <= retry_time: 
             print("Sending to Dingtalk .....")
 
             r = requests.post(url, headers = headers, json = payload) 
@@ -26,7 +26,7 @@ class ChatBot:
                 error = "Attemps {}, error {}. Retrying ....."
                 error = error.format(attemps, r.text) 
                 print(error) 
-                time.sleep(10)
+                time.sleep(buffering)
                 continue 
             
             raise RuntimeError("Cannnot send message due to %s" % r.text) 
@@ -42,4 +42,4 @@ class ChatBot:
             "at": {}
         }
 
-        self.send_markdown(payload = payload, access_token = access_token)
+        self.send_markdown(payload = payload, access_token = access_token, retry_time = 3, buffering = 5) 

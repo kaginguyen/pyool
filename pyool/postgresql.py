@@ -59,16 +59,16 @@ class PostgreSQLConnector:
         cur.execute("TRUNCATE TABLE %s" % (table)) 
 
 
-    def uploadCsv(self, filepath, table, fields, truncate = False, remove_file = False):
+    def uploadCsv(self, filepath, table, fields, truncate = False, remove_file = False, retry_time = 3, buffering = 5):
         if truncate == True: 
             self.truncate(table)
             print("Table truncated. Start uploading...")
 
         cur = self.connection.cursor()
 
-        attemps = 0
+        attemps = 1
 
-        while attemps < 3:
+        while attemps < retry_time:
             try: 
                 with open(filepath, 'r', encoding='utf-8') as f:
                     sql = "COPY %s(%s) FROM STDIN WITH ( DELIMITER ',', FORMAT CSV, HEADER, ENCODING 'UTF8', FORCE_NULL(%s))" % (table, fields, fields) 
@@ -78,7 +78,7 @@ class PostgreSQLConnector:
             except Exception as e:
                 attemps += 1
                 print("Retrying... %s. Why: %s" % (attemps, e))
-                time.sleep(5)
+                time.sleep(buffering)
             else:
                 break  
 

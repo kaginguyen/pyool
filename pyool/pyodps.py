@@ -60,7 +60,7 @@ class OdpsConnector:
         raise RuntimeError("Cannot query to ODPS due to: %s" % error) 
 
 
-    def dump_to_csv(self, query, storage_path, filename = None, buffering = 5): 
+    def dump_to_csv(self, query, storage_path, filename = None, retry_time = 3, buffering = 5): 
         if not filename:
             filename = str(uuid.uuid4())
 
@@ -68,9 +68,9 @@ class OdpsConnector:
 
         filepath = os.path.join(storage_path, filename)
 
-        attemps = 0 
+        attemps = 1 
 
-        while attemps < 3 :
+        while attemps <= retry_time:
             try: 
                 reader = self.run_query(query)
                 print("... Done dumping to csv file %s" % filename)
@@ -89,6 +89,7 @@ class OdpsConnector:
                 attemps += 1
                 print("Retrying... %s. Why: %s" % (attemps, e))
                 time.sleep(buffering)
+                continue 
             else:
                 break 
 
