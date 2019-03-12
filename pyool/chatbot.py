@@ -1,5 +1,7 @@
 import requests 
 import time 
+from .logger_setting import logger  
+
 
 
 # Defining ChatBot specific Class to send messages to Dingtalk 
@@ -10,29 +12,27 @@ class ChatBot:
         url = "https://oapi.dingtalk.com/robot/send?access_token=" + str(access_token)  
         headers = {"Content-Type": "application/json;charset=utf-8"}
 
-        attemps = 1 
+        attempt = 0 
 
-        while attemps <= retry_time: 
-            print("Sending to Dingtalk .....")
+        while attempt < retry_time: 
+            logger.info("Sending to Dingtalk .....")
 
             r = requests.post(url, headers = headers, json = payload) 
 
             if (r.text == """{"errcode":0,"errmsg":"ok"}""" or r.text == """{"errmsg":"ok","errcode":0}"""): 
-                print("Message is sent.")
+                logger.info("Message is sent.")
                 break 
 
             else: 
-                attemps += 1
-                error = "Attemps {}, error {}. Retrying ....."
-                error = error.format(attemps, r.text) 
-                print(error) 
+                attempt += 1
+                logger.error("Attempt {}, error {}. Retrying .....".format(attempt, r.text)) 
                 time.sleep(buffering)
                 continue 
             
             raise RuntimeError("Cannnot send message due to %s" % r.text) 
 
 
-    def send2ding(self, title, message, access_token):
+    def send2ding(self, title, message, access_token, retry_time = 3, buffering = 5):
         payload = {
             "msgtype": "markdown",
             "markdown": {
@@ -42,4 +42,4 @@ class ChatBot:
             "at": {}
         }
 
-        self.send_markdown(payload = payload, access_token = access_token, retry_time = 3, buffering = 5) 
+        self.send_markdown(payload = payload, access_token = access_token, retry_time = retry_time, buffering = buffering) 

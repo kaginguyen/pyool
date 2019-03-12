@@ -4,20 +4,37 @@ from odps import ODPS
 import time 
 import uuid 
 import os 
+from .logger_setting import logger  
 
 
 # Defining ODPS specific class to work with 
 
 class OdpsConnector: 
 
-    def connect(self, accessId, accessKey, project, endPoint, tunnelEndPoint):
-        self.connection = ODPS(
-            access_id = accessId
-            , secret_access_key = accessKey
-            , project = project
-            , endpoint = endPoint 
-            ,tunnel_endpoint = tunnelEndPoint
-        ) 
+    def connect(self, accessId, accessKey, project, endPoint, tunnelEndPoint, retry_time = 3, buffering = 5):
+        attempt = 0
+        while attempt < retry_time:
+            try: 
+                logger.info("Connecting...") 
+
+                self.connection = ODPS(
+                    access_id = accessId
+                    , secret_access_key = accessKey
+                    , project = project
+                    , endpoint = endPoint 
+                    ,tunnel_endpoint = tunnelEndPoint
+                ) 
+                logger("Connection established.")
+                return True 
+
+            except Exception as e:
+                attempt += 1
+                logger.error("Attempt {}, error {}. Retrying .....".format(attempt, e))  
+                time.sleep(buffering) 
+                continue  
+
+        raise RuntimeError("Can not access to ODPS due to {}".format(e)) 
+
 
 
     def read_sql(self, file_path):
@@ -27,6 +44,7 @@ class OdpsConnector:
         return query 
     
 
+
     def extract_header(self, csv_file_path): 
         with open(csv_file_path, "r", newline = "") as file:
             reader = csv.reader(file)
@@ -35,29 +53,30 @@ class OdpsConnector:
         return header 
 
 
+
     def run_query(self, query, return_data = False, retry_time = 3, buffering = 5):  
         
-        attempt = 1
+        attempt = 0
 
-        while attempt <= retry_time:
+        while attempt < retry_time:
             try:
-                print("Querying.....")
+                logger.info("Querying.....") 
 
                 with self.connection.execute_sql(query, None, 1, hints = {"odps.sql.submit.mode" : "script"}).open_reader() as reader:
-                    print("Query is finished")
+                    logger.info("Query is finished")
+
                     if return_data == True: 
                         return reader.to_pandas()  
                     else: 
                         return reader 
             except Exception as e:
                 attempt += 1
-                error = "Attempt {}, error {}. Retrying ....."
-                error = error.format(attempt, e) 
-                print(error) 
+                logger.error("Attempt {}, error {}. Retrying .....".format(attempt, e))  
                 time.sleep(buffering) 
                 continue  
         
-        raise RuntimeError("Cannot query to ODPS due to: %s" % error) 
+        raise RuntimeError("Cannot query to ODPS due to: {}".format(e)) 
+
 
 
     def dump_to_csv(self, query, storage_path, filename = None, retry_time = 3, buffering = 5): 
@@ -68,12 +87,12 @@ class OdpsConnector:
 
         filepath = os.path.join(storage_path, filename)
 
-        attemps = 1 
+        attemps = 0 
 
-        while attemps <= retry_time:
+        while attemps < retry_time:
             try: 
-                reader = self.run_query(query)
-                print("... Done dumping to csv file %s" % filename)
+                reader = self.run_query(query, retry_time = 0, buffering = 0)
+                logger.info("Done dumping to csv file {}".format(filename))
                 with open(filepath, "w", encoding ="utf-8") as file:
                     writer = csv.writer(file, delimiter = ",", quoting = csv.QUOTE_NONNUMERIC
                                         , lineterminator = "\n")
@@ -87,7 +106,7 @@ class OdpsConnector:
 
             except Exception as e:
                 attemps += 1
-                print("Retrying... %s. Why: %s" % (attemps, e))
+                logger.error("Retrying... %s. Why: %s" % (attemps, e))
                 time.sleep(buffering)
                 continue 
             else:
