@@ -14,7 +14,7 @@ class ChatBot:
 
         attempt = 0 
 
-        while attempt < retry_time: 
+        while attempt <= retry_time: 
             logger.info("Sending to Dingtalk .....")
 
             r = requests.post(url, headers = headers, json = payload) 

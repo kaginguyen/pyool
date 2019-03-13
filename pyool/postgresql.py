@@ -25,11 +25,12 @@ class PostgreSQLConnector:
 
             except Exception as e:
                 attempt += 1
-                logger.error("Attempt {}, error {}. Retrying .....".format(attempt, e))  
+                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
+                logger.error(issue)  
                 time.sleep(buffering) 
                 continue  
 
-        raise RuntimeError("Can not access to PostgreSQL due to {}".format(e)) 
+        raise RuntimeError("Can not access to PostgreSQL due to {}".format(issue)) 
 
 
 
@@ -73,12 +74,13 @@ class PostgreSQLConnector:
                     return True 
             except Exception as e: 
                 attempt += 1
-                logger.error("Attempt {}, error {}. Retrying .....".format(attempt, e))  
+                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
+                logger.error(issue)  
                 time.sleep(buffering) 
                 continue 
                  
         cur.close()
-        raise RuntimeError("Cannot query to ODPS due to: {}".format(e))
+        raise RuntimeError("Cannot query to ODPS due to: {}".format(issue))
         
         
 

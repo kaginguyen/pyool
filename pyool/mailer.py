@@ -7,12 +7,14 @@ from email import encoders
 from .logger_setting import logger 
 from datetime import datetime 
 import os 
+import time 
 
 
 class Mailer: 
 
     def send(self, email_title, message, mail_server, mail_to_list, mail_cc_list
-            , attached_file_path_list = None, attached_image_path_list = None, message_encode = "plain"): 
+            , attached_file_path_list = None, attached_image_path_list = None, message_encode = "plain"
+            , retry_time = 3, buffering = 5): 
 
         server = smtplib.SMTP(
         host = mail_server['host'], 
@@ -65,6 +67,21 @@ class Mailer:
                 mail_server['pwd']
             )
         
-        server.sendmail(msg['From'], msg_to, msg.as_string())
-        logger.info("Finish sending email.") 
+        attempt = 0
+        while attempt <= retry_time:
+            try: 
+                server.sendmail(msg['From'], msg_to, msg.as_string())
+                logger.info("Finish sending email.") 
+                server.quit()
+            except Exception as e: 
+                attempt += 1
+                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
+                logger.error(issue) 
+                time.sleep(buffering) 
+                continue
+                
         server.quit()
+        raise RuntimeError("Cannot query to ODPS due to: {}".format(issue))
+
+        
+        

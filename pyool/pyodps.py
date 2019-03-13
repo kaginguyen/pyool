@@ -13,7 +13,8 @@ class OdpsConnector:
 
     def connect(self, accessId, accessKey, project, endPoint, tunnelEndPoint, retry_time = 3, buffering = 5):
         attempt = 0
-        while attempt < retry_time:
+
+        while attempt <= retry_time:
             try: 
                 logger.info("Connecting...") 
 
@@ -24,16 +25,17 @@ class OdpsConnector:
                     , endpoint = endPoint 
                     ,tunnel_endpoint = tunnelEndPoint
                 ) 
-                logger("Connection established.")
+                logger.info("Connection established.")
                 return True 
 
             except Exception as e:
                 attempt += 1
-                logger.error("Attempt {}, error {}. Retrying .....".format(attempt, e))  
+                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
+                logger.error(issue)  
                 time.sleep(buffering) 
                 continue  
 
-        raise RuntimeError("Can not access to ODPS due to {}".format(e)) 
+        raise RuntimeError("Can not access to ODPS due to {}".format(issue)) 
 
 
 
@@ -58,7 +60,7 @@ class OdpsConnector:
         
         attempt = 0
 
-        while attempt < retry_time:
+        while attempt <= retry_time:
             try:
                 logger.info("Querying.....") 
 
@@ -71,11 +73,12 @@ class OdpsConnector:
                         return reader 
             except Exception as e:
                 attempt += 1
-                logger.error("Attempt {}, error {}. Retrying .....".format(attempt, e))  
+                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
+                logger.error(issue)  
                 time.sleep(buffering) 
                 continue  
         
-        raise RuntimeError("Cannot query to ODPS due to: {}".format(e)) 
+        raise RuntimeError("Cannot query to ODPS due to: {}".format(issue)) 
 
 
 
@@ -87,9 +90,9 @@ class OdpsConnector:
 
         filepath = os.path.join(storage_path, filename)
 
-        attemps = 0 
+        attempt = 0 
 
-        while attemps < retry_time:
+        while attempt <= retry_time:
             try: 
                 reader = self.run_query(query, retry_time = 0, buffering = 0)
                 logger.info("Done dumping to csv file {}".format(filename))
@@ -105,12 +108,14 @@ class OdpsConnector:
                 return filepath
 
             except Exception as e:
-                attemps += 1
-                logger.error("Retrying... %s. Why: %s" % (attemps, e))
+                attempt += 1
+                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
+                logger.error(issue)
                 time.sleep(buffering)
                 continue 
-            else:
-                break 
+
+        raise RuntimeError("Cannot query to ODPS due to: {}".format(issue)) 
+            
 
 
 
