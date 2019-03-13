@@ -2,4 +2,9 @@
 setup.cfg
 setup.py
 pyool\__init__.py
-pyool\pyool.py
+pyool\chatbot.py
+pyool\logger_setting.py
+pyool\mailer.py
+pyool\mysql.py
+pyool\postgresql.py
+pyool\pyodps.py
