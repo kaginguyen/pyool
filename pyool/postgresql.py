@@ -20,7 +20,7 @@ class PostgreSQLConnector:
                                                     , port = port
                                                     , user = user
                                                     , password = password) 
-                logger("Connection established.")
+                logger.info("Connection established.")
                 return True 
 
             except Exception as e:

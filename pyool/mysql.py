@@ -23,7 +23,7 @@ class MySQLConnector:
                                                             user = user,
                                                             passwd = password
                                                             )
-                logger("Connection established.")
+                logger.info("Connection established.")
                 return True 
 
             except Exception as e:
