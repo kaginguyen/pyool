@@ -4,3 +4,6 @@ testing.py
 /__pycache__/
 /.vscode/ 
 /pyool/__pycache__
+/docs/nbuild
+/docs/nstatic
+/docs/ntemplates
