@@ -14,6 +14,9 @@ Table of Contents
 .. toctree::
    :maxdepth: 2
 
+   installation
+   tutorial
+   about
    license
    help
 
