@@ -16,6 +16,8 @@ class Mailer:
             , attached_file_path_list = None, attached_image_path_list = None, message_encode = "plain"
             , retry_time = 3, buffering = 5): 
 
+        logger.info("Start setting up Mailer...")
+
         server = smtplib.SMTP(
         host = mail_server['host'], 
         port = mail_server['port']
@@ -32,7 +34,7 @@ class Mailer:
         msg['CC'] = ', '.join(msg_cc)
         msg['Subject'] = email_title
 
-
+        logger.info("Compiling message...")
         msg.attach(MIMEText(message, message_encode))
 
         if attached_file_path_list != None: 
@@ -66,6 +68,7 @@ class Mailer:
                 mail_server['user'],
                 mail_server['pwd']
             )
+        
         
         attempt = 0
         while attempt <= retry_time:

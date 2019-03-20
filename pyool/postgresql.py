@@ -64,13 +64,13 @@ class PostgreSQLConnector:
                     column_names = [desc[0] for desc in cur.description]
                     df = pd.DataFrame(data, columns = column_names) 
                     cur.close() 
-                    print("Data is returned")
+                    logger.info("Data is returned")
                     return df 
 
                 else: 
                     cur.close()
                     self.connection.commit()
-                    print("Query is executed")  
+                    logger.info("Query is executed")  
                     return True 
             except Exception as e: 
                 attempt += 1
@@ -94,7 +94,7 @@ class PostgreSQLConnector:
     def uploadCsv(self, filepath, table, fields, truncate = False, remove_file = False, retry_time = 3, buffering = 5):
         if truncate == True: 
             self.truncate(table)
-            print("Table truncated. Start uploading...")
+            logger.info("Table truncated. Start uploading...")
 
         cur = self.connection.cursor()
 
@@ -109,7 +109,7 @@ class PostgreSQLConnector:
 
             except Exception as e:
                 attemps += 1
-                print("Retrying... %s. Why: %s" % (attemps, e))
+                logger.error("Retrying... %s. Why: %s" % (attemps, e))
                 time.sleep(buffering)
             else:
                 break  

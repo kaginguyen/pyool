@@ -90,31 +90,18 @@ class OdpsConnector:
 
         filepath = os.path.join(storage_path, filename)
 
-        attempt = 0 
+        reader = self.run_query(query, retry_time = retry_time, buffering = buffering)
+        logger.info("Done dumping to csv file {}".format(filename))
+        with open(filepath, "w", encoding ="utf-8") as file:
+            writer = csv.writer(file, delimiter = ",", quoting = csv.QUOTE_NONNUMERIC
+                                , lineterminator = "\n")
+            
+            writer.writerow(reader._schema.names)
 
-        while attempt <= retry_time:
-            try: 
-                reader = self.run_query(query, retry_time = 0, buffering = 0)
-                logger.info("Done dumping to csv file {}".format(filename))
-                with open(filepath, "w", encoding ="utf-8") as file:
-                    writer = csv.writer(file, delimiter = ",", quoting = csv.QUOTE_NONNUMERIC
-                                        , lineterminator = "\n")
-                    
-                    writer.writerow(reader._schema.names)
-
-                    for record in reader: 
-                        writer.writerow(record[0:])
-                
-                return filepath
-
-            except Exception as e:
-                attempt += 1
-                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
-                logger.error(issue)
-                time.sleep(buffering)
-                continue 
-
-        raise RuntimeError("Cannot query to ODPS due to: {}".format(issue)) 
+            for record in reader: 
+                writer.writerow(record[0:])
+        
+        return filepath
             
 
 

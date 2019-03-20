@@ -1,5 +1,6 @@
 from .logger_setting import logger 
 from O365 import Account, MSGraphProtocol, oauth_authentication_flow
+import os
 
 
 class OneDriver():
@@ -7,10 +8,11 @@ class OneDriver():
     def self_authenticate(self, client_id, client_secret):
         try: 
             oauth_authentication_flow(client_id, client_secret, scopes = ['onedrive'])
+            logger.info("Self Authentication to get Token is executed. There will be a .txt file with token information can be found in the same folder of the .py file.")
             return True 
         except Exception as e: 
             logger.error(e)  
-            raise RuntimeError("Cannot query to OneDrive due to: {}".format(e)) 
+            raise RuntimeError("Cannot access to OneDrive due to: {}".format(e)) 
 
 
 
@@ -22,7 +24,7 @@ class OneDriver():
             return account  
         except Exception as e: 
             logger.error(e)  
-            raise RuntimeError("Cannot query to OneDrive due to: {}".format(e)) 
+            raise RuntimeError("Cannot access to OneDrive due to: {}".format(e)) 
 
 
 
@@ -33,17 +35,20 @@ class OneDriver():
     
     
     def upload(self, folder, file_path_list):
-        items = []
+        item_id_list= []
         
-        try: 
-            for file_path in file_path_list:
-                item_object = folder.upload_file(item = file_path)
-                items.append(item_object)
-            return items 
+        for file_path in file_path_list:
+            try: 
+                item_id = folder.upload_file(item = file_path)
+                item_id_list.append(item_id)
+                logger.info("{} uploaded successful with item_id = {}".format(os.path.basename(file_path), item_id)
 
-        except Exception as e: 
-            logger.error(e)  
-            raise RuntimeError("Cannot query to OneDrive due to: {}".format(e)) 
+            except Exception as e: 
+                logger.error(e)  
+                continue 
+
+
+        
 
 
 
