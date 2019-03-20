@@ -6,5 +6,6 @@ pyool\chatbot.py
 pyool\logger_setting.py
 pyool\mailer.py
 pyool\mysql.py
+pyool\onedriver.py
 pyool\postgresql.py
 pyool\pyodps.py
