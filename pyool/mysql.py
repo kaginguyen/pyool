@@ -33,7 +33,7 @@ class MySQLConnector:
                 time.sleep(buffering) 
                 continue  
 
-        raise RuntimeError("Can not access to PostgreSQL due to {}".format(issue)) 
+        raise RuntimeError("Can not access to MySQL server due to {}".format(issue)) 
 
     
     def read_sql(self, file_path):
@@ -80,7 +80,7 @@ class MySQLConnector:
                 continue  
 
         cur.close() 
-        raise RuntimeError("Cannot query to ODPS due to: {}".format(issue))
+        raise RuntimeError("Cannot query from MySQL server due to: {}".format(issue))
                  
 
     def disconnect(self):

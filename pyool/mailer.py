@@ -84,7 +84,7 @@ class Mailer:
                 continue
                 
         server.quit()
-        raise RuntimeError("Cannot query to ODPS due to: {}".format(issue))
+        raise RuntimeError("Cannot send email due to: {}".format(issue))
 
         
         

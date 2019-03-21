@@ -41,7 +41,7 @@ class OneDriver():
             try: 
                 item_id = folder.upload_file(item = file_path)
                 item_id_list.append(item_id)
-                logger.info("{} uploaded successful with item_id = {}".format(os.path.basename(file_path), item_id)
+                logger.info("{} uploaded successful with item_id = {}".format(os.path.basename(file_path), item_id))
 
             except Exception as e: 
                 logger.error(e)  

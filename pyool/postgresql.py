@@ -80,7 +80,7 @@ class PostgreSQLConnector:
                 continue 
                  
         cur.close()
-        raise RuntimeError("Cannot query to ODPS due to: {}".format(issue))
+        raise RuntimeError("Cannot query from PostgreSQL server due to: {}".format(issue))
         
         
 
@@ -98,7 +98,7 @@ class PostgreSQLConnector:
 
         cur = self.connection.cursor()
 
-        attemps = 1
+        attemps = 0
 
         while attemps < retry_time:
             try: 
@@ -106,6 +106,9 @@ class PostgreSQLConnector:
                     sql = "COPY %s(%s) FROM STDIN WITH ( DELIMITER ',', FORMAT CSV, HEADER, ENCODING 'UTF8', FORCE_NULL(%s))" % (table, fields, fields) 
                     cur.copy_expert(sql, f) 
                     self.connection.commit()
+                    if remove_file == True:
+                        os.remove(filepath) 
+                    return True
 
             except Exception as e:
                 attemps += 1
@@ -114,10 +117,7 @@ class PostgreSQLConnector:
             else:
                 break  
 
-        if remove_file == True:
-            os.remove(filepath) 
-        
-        return True 
+        raise RuntimeError("Cannot upload to PostgreSQL server due to: {}".format(e))
 
 
 
