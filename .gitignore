@@ -7,3 +7,4 @@ testing.py
 /docs/nbuild
 /docs/nstatic
 /docs/ntemplates
+/dist/
