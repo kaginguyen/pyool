@@ -10,7 +10,7 @@ setup(
   author = 'Loc Nguyen',                   # Type in your name
   author_email = 'loc.nguyen14061996@gmail.com',      # Type in your E-Mail
   url = 'https://github.com/locnguyen14061996/pyool',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/locnguyen14061996/pyool/archive/0.1.4.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/locnguyen14061996/pyool/archive/0.1.5.tar.gz',    # I explain this later on
   keywords = ['Python', 'ODPS', 'pyool'],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
           'odps',
