@@ -98,7 +98,7 @@ class PostgreSQLConnector:
 
         cur = self.connection.cursor()
 
-        attemps = 0
+        attempt = 0
 
         while attempt == 0 or attempt < retry_time:
             try: 
@@ -111,8 +111,8 @@ class PostgreSQLConnector:
                     return True
 
             except Exception as e:
-                attemps += 1
-                logger.error("Retrying... %s. Why: %s" % (attemps, e))
+                attempt += 1
+                logger.error("Retrying... %s. Why: %s" % (attempt, e))
                 time.sleep(buffering)
                 continue 
 
