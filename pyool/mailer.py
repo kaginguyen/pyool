@@ -14,7 +14,7 @@ class Mailer:
 
     def send(self, email_title, message, mail_server, mail_to_list, mail_cc_list
             , attached_file_path_list = None, attached_image_path_list = None, message_encode = "plain"
-            , retry_time = 3, buffering = 5): 
+            , retry_time = 0, buffering = 5): 
 
         logger.info("Start setting up Mailer...")
 
@@ -76,10 +76,13 @@ class Mailer:
                 server.sendmail(msg['From'], msg_to, msg.as_string())
                 logger.info("Finish sending email.") 
                 server.quit()
+                return True 
+
             except Exception as e: 
                 attempt += 1
-                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
-                logger.error(issue) 
+                issue = e 
+                message = "Attempt {}. {}. Retrying .....".format(attempt, issue)
+                logger.error(message)
                 time.sleep(buffering) 
                 continue
                 

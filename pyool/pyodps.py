@@ -11,7 +11,7 @@ from .logger_setting import logger
 
 class OdpsConnector: 
 
-    def connect(self, accessId, accessKey, project, endPoint, tunnelEndPoint, retry_time = 3, buffering = 5):
+    def connect(self, accessId, accessKey, project, endPoint, tunnelEndPoint, retry_time = 0, buffering = 5):
         attempt = 0
 
         while attempt == 0 or attempt < retry_time:
@@ -30,12 +30,13 @@ class OdpsConnector:
 
             except Exception as e:
                 attempt += 1
-                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
-                logger.error(issue)  
+                issue = e 
+                message = "Attempt {}. {}. Retrying .....".format(attempt, issue)
+                logger.error(message)  
                 time.sleep(buffering) 
                 continue  
 
-            raise RuntimeError("Can not access to ODPS due to {}".format(issue)) 
+        raise RuntimeError("Can not access to ODPS due to {}".format(issue)) 
 
 
 
@@ -56,7 +57,7 @@ class OdpsConnector:
 
 
 
-    def run_query(self, query, return_data = False, retry_time = 3, buffering = 5):  
+    def run_query(self, query, return_data = False, retry_time = 0, buffering = 5):  
         
         attempt = 0
 
@@ -73,16 +74,17 @@ class OdpsConnector:
                         return reader 
             except Exception as e:
                 attempt += 1
-                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
-                logger.error(issue)  
+                issue = e 
+                message = "Attempt {}. {}. Retrying .....".format(attempt, issue)
+                logger.error(message)  
                 time.sleep(buffering) 
                 continue  
         
-            raise RuntimeError("Cannot query to ODPS due to: {}".format(issue)) 
+        raise RuntimeError("Cannot query from ODPS due to: {}".format(issue)) 
 
 
 
-    def dump_to_csv(self, query, storage_path, filename = None, retry_time = 3, buffering = 5): 
+    def dump_to_csv(self, query, storage_path, filename = None, retry_time = 0, buffering = 5): 
         if not filename:
             filename = str(uuid.uuid4())
 

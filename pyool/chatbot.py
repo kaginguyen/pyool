@@ -57,11 +57,11 @@ class ChatBot:
 
             else: 
                 attempt += 1
-                logger.error("Attempt {}, error {}. Retrying .....".format(attempt, r.text)) 
+                logger.error("Attempt {}. {}. Retrying .....".format(attempt, r.text)) 
                 time.sleep(buffering)
                 continue 
             
-        raise RuntimeError("Cannnot send message due to %s" % r.text) 
+        raise RuntimeError("Cannnot send message due to: %s" % r.text) 
 
 
 

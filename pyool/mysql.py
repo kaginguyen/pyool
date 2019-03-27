@@ -10,7 +10,7 @@ from .logger_setting import logger
 
 class MySQLConnector: 
 
-    def connect(self, db_name, host, port, user, password, retry_time = 3, buffering = 5): 
+    def connect(self, db_name, host, port, user, password, retry_time = 0, buffering = 5): 
         attempt = 0
 
         while attempt == 0 or attempt < retry_time:
@@ -28,17 +28,18 @@ class MySQLConnector:
 
             except Exception as e:
                 attempt += 1
-                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
-                logger.error(issue) 
+                issue = e 
+                message = "Attempt {}. {}. Retrying .....".format(attempt, issue)
+                logger.error(message)
                 time.sleep(buffering) 
                 continue  
 
-        raise RuntimeError("Can not access to MySQL server due to {}".format(issue)) 
+        raise RuntimeError("Can not access to MySQL server due to: {}".format(issue)) 
 
     
     def read_sql(self, file_path):
         with open(file_path, "r", encoding = "utf-8") as file:
-            query  = file.read()
+            query = file.read()
 
         return query 
     
@@ -51,7 +52,7 @@ class MySQLConnector:
         return header 
 
 
-    def run_query(self, query, return_data = False, retry_time = 3, buffering = 5):
+    def run_query(self, query, return_data = False, retry_time = 0, buffering = 5):
         attempt = 0
 
         while attempt == 0 or attempt < retry_time:
@@ -74,12 +75,13 @@ class MySQLConnector:
             
             except Exception as e: 
                 attempt += 1
-                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
-                logger.error(issue) 
+                issue = e 
+                message = "Attempt {}. {}. Retrying .....".format(attempt, issue)
+                logger.error(message)
                 time.sleep(buffering) 
                 continue  
 
-        cur.close() 
+        self.connection.rollback()
         raise RuntimeError("Cannot query from MySQL server due to: {}".format(issue))
                  
 

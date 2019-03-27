@@ -9,7 +9,7 @@ from .logger_setting import logger
 # Defining PostgreSQL Database specific Class to work with
 
 class PostgreSQLConnector: 
-    def connect(self, db_name, host, port, user, password, retry_time = 3, buffering = 5):
+    def connect(self, db_name, host, port, user, password, retry_time = 0, buffering = 5):
         attempt = 0
         
         while attempt == 0 or attempt < retry_time:
@@ -25,12 +25,13 @@ class PostgreSQLConnector:
 
             except Exception as e:
                 attempt += 1
-                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
-                logger.error(issue)  
+                issue = e 
+                message = "Attempt {}. {}. Retrying .....".format(attempt, issue)
+                logger.error(message)
                 time.sleep(buffering) 
                 continue  
 
-            raise RuntimeError("Can not access to PostgreSQL due to {}".format(issue)) 
+            raise RuntimeError("Can not access to PostgreSQL due to: {}".format(issue)) 
 
 
 
@@ -51,7 +52,7 @@ class PostgreSQLConnector:
 
 
 
-    def run_query(self, query, return_data = False, retry_time = 3, buffering = 5): 
+    def run_query(self, query, return_data = False, retry_time = 0, buffering = 5): 
         attempt = 0
 
         while attempt == 0 or attempt < retry_time:
@@ -72,15 +73,17 @@ class PostgreSQLConnector:
                     self.connection.commit()
                     logger.info("Query is executed")  
                     return True 
+
             except Exception as e: 
                 attempt += 1
-                issue = "Attempt {}, error {}. Retrying .....".format(attempt, e)
-                logger.error(issue)  
+                issue = e 
+                message = "Attempt {}. {}. Retrying .....".format(attempt, issue)
+                logger.error(message)  
                 time.sleep(buffering) 
                 continue 
-                 
-            cur.close()
-            raise RuntimeError("Cannot query from PostgreSQL server due to: {}".format(issue))
+        
+        self.connection.rollback() 
+        raise RuntimeError("Cannot query from PostgreSQL server due to: {}".format(issue))
         
         
 
@@ -91,7 +94,7 @@ class PostgreSQLConnector:
 
 
 
-    def uploadCsv(self, filepath, table, fields, truncate = False, remove_file = False, retry_time = 3, buffering = 5):
+    def uploadCsv(self, filepath, table, fields, truncate = False, remove_file = False, retry_time = 0, buffering = 5):
         if truncate == True: 
             self.truncate(table)
             logger.info("Table truncated. Start uploading...")
@@ -112,13 +115,17 @@ class PostgreSQLConnector:
 
             except Exception as e:
                 attempt += 1
-                logger.error("Retrying... %s. Why: %s" % (attempt, e))
+                issue = e 
+                message = "Attempt {}. {}. Retrying .....".format(attempt, issue)
+                logger.error(message)
                 time.sleep(buffering)
                 continue 
 
-            raise RuntimeError("Cannot upload to PostgreSQL server due to: {}".format(e))
+            raise RuntimeError("Cannot upload to PostgreSQL server due to: {}".format(issue))
 
 
 
     def disconnect(self):
-        self.connection.close() 
+        state = self.connection.close() 
+        logger.info("Connection closed.")
+        return state 
