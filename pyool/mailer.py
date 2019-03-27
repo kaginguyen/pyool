@@ -71,7 +71,7 @@ class Mailer:
         
         
         attempt = 0
-        while attempt <= retry_time:
+        while attempt == 0 or attempt < retry_time:
             try: 
                 server.sendmail(msg['From'], msg_to, msg.as_string())
                 logger.info("Finish sending email.") 

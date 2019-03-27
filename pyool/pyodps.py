@@ -14,7 +14,7 @@ class OdpsConnector:
     def connect(self, accessId, accessKey, project, endPoint, tunnelEndPoint, retry_time = 3, buffering = 5):
         attempt = 0
 
-        while attempt <= retry_time:
+        while attempt == 0 or attempt < retry_time:
             try: 
                 logger.info("Connecting...") 
 
@@ -35,7 +35,7 @@ class OdpsConnector:
                 time.sleep(buffering) 
                 continue  
 
-        raise RuntimeError("Can not access to ODPS due to {}".format(issue)) 
+            raise RuntimeError("Can not access to ODPS due to {}".format(issue)) 
 
 
 
@@ -60,7 +60,7 @@ class OdpsConnector:
         
         attempt = 0
 
-        while attempt <= retry_time:
+        while attempt == 0 or attempt < retry_time:
             try:
                 logger.info("Querying.....") 
 
@@ -78,7 +78,7 @@ class OdpsConnector:
                 time.sleep(buffering) 
                 continue  
         
-        raise RuntimeError("Cannot query to ODPS due to: {}".format(issue)) 
+            raise RuntimeError("Cannot query to ODPS due to: {}".format(issue)) 
 
 
 

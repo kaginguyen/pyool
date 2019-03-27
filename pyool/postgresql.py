@@ -12,7 +12,7 @@ class PostgreSQLConnector:
     def connect(self, db_name, host, port, user, password, retry_time = 3, buffering = 5):
         attempt = 0
         
-        while attempt < retry_time:
+        while attempt == 0 or attempt < retry_time:
             try: 
                 logger.info("Connecting...") 
                 self.connection  = psycopg2.connect(dbname = db_name
@@ -30,7 +30,7 @@ class PostgreSQLConnector:
                 time.sleep(buffering) 
                 continue  
 
-        raise RuntimeError("Can not access to PostgreSQL due to {}".format(issue)) 
+            raise RuntimeError("Can not access to PostgreSQL due to {}".format(issue)) 
 
 
 
@@ -54,7 +54,7 @@ class PostgreSQLConnector:
     def run_query(self, query, return_data = False, retry_time = 3, buffering = 5): 
         attempt = 0
 
-        while attempt < retry_time: 
+        while attempt == 0 or attempt < retry_time:
             try: 
                 cur = self.connection.cursor()
                 cur.execute(query) 
@@ -79,8 +79,8 @@ class PostgreSQLConnector:
                 time.sleep(buffering) 
                 continue 
                  
-        cur.close()
-        raise RuntimeError("Cannot query from PostgreSQL server due to: {}".format(issue))
+            cur.close()
+            raise RuntimeError("Cannot query from PostgreSQL server due to: {}".format(issue))
         
         
 
@@ -100,7 +100,7 @@ class PostgreSQLConnector:
 
         attemps = 0
 
-        while attemps < retry_time:
+        while attempt == 0 or attempt < retry_time:
             try: 
                 with open(filepath, 'r', encoding='utf-8') as f:
                     sql = "COPY %s(%s) FROM STDIN WITH ( DELIMITER ',', FORMAT CSV, HEADER, ENCODING 'UTF8', FORCE_NULL(%s))" % (table, fields, fields) 
@@ -114,10 +114,9 @@ class PostgreSQLConnector:
                 attemps += 1
                 logger.error("Retrying... %s. Why: %s" % (attemps, e))
                 time.sleep(buffering)
-            else:
-                break  
+                continue 
 
-        raise RuntimeError("Cannot upload to PostgreSQL server due to: {}".format(e))
+            raise RuntimeError("Cannot upload to PostgreSQL server due to: {}".format(e))
 
 
 

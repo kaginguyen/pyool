@@ -13,7 +13,7 @@ class MySQLConnector:
     def connect(self, db_name, host, port, user, password, retry_time = 3, buffering = 5): 
         attempt = 0
 
-        while attempt < retry_time:
+        while attempt == 0 or attempt < retry_time:
             try: 
                 logger.info("Connecting...") 
                 self.connection = mysql.connector.connect(
@@ -54,7 +54,7 @@ class MySQLConnector:
     def run_query(self, query, return_data = False, retry_time = 3, buffering = 5):
         attempt = 0
 
-        while attempt < retry_time: 
+        while attempt == 0 or attempt < retry_time:
             try: 
                 logger.info("Start querying .....")
                 cur = self.connection.cursor()
