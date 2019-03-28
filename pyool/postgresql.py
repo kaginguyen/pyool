@@ -94,33 +94,24 @@ class PostgreSQLConnector:
 
 
 
-    def uploadCsv(self, filepath, table, fields, truncate = False, remove_file = False, retry_time = 0, buffering = 5):
+    def uploadCsv(self, filepath, table, fields, truncate = False, remove_file = False): 
         if truncate == True: 
             self.truncate(table)
             logger.info("Table truncated. Start uploading...")
 
         cur = self.connection.cursor()
 
-        attempt = 0
+        try: 
+            with open(filepath, 'r', encoding='utf-8') as f:
+                sql = "COPY %s(%s) FROM STDIN WITH ( DELIMITER ',', FORMAT CSV, HEADER, ENCODING 'UTF8', FORCE_NULL(%s))" % (table, fields, fields) 
+                cur.copy_expert(sql, f) 
+                self.connection.commit()
+            if remove_file == True:
+                os.remove(filepath) 
+            return True
 
-        while attempt == 0 or attempt < retry_time:
-            try: 
-                with open(filepath, 'r', encoding='utf-8') as f:
-                    sql = "COPY %s(%s) FROM STDIN WITH ( DELIMITER ',', FORMAT CSV, HEADER, ENCODING 'UTF8', FORCE_NULL(%s))" % (table, fields, fields) 
-                    cur.copy_expert(sql, f) 
-                    self.connection.commit()
-                    if remove_file == True:
-                        os.remove(filepath) 
-                    return True
-
-            except Exception as e:
-                attempt += 1
-                issue = e 
-                message = "Attempt {}. {}. Retrying .....".format(attempt, issue)
-                logger.error(message)
-                time.sleep(buffering)
-                continue 
-
+        except Exception as e:
+            issue = e 
             raise RuntimeError("Cannot upload to PostgreSQL server due to: {}".format(issue))
 
 
