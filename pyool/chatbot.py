@@ -8,7 +8,7 @@ from .logger_setting import logger
 
 class ChatBot: 
 
-    def send_markdown(self, payload, access_token, retry_time = 3, buffering = 5): 
+    def send_markdown(self, payload, access_token, retry_time = 0, buffering = 5): 
 
         """
         Sending markdown content in payload to Dingtalk
