@@ -116,6 +116,82 @@ class PostgreSQLConnector:
 
 
 
+    def upsert(self, filepath, table, conflict_resolution = 'new', truncate = False, remove_file = False):
+        if truncate == True: 
+            self.truncate(table)
+            logger.info("Table truncated. Start uploading...")
+
+        reg_sub = lambda x: str(x).replace("'", "''")
+
+        cur = self.connection.cursor()
+
+        try: 
+            with open(filepath, 'r', encoding='utf-8') as f:
+                first_line = f.readline() 
+                first_line = first_line.replace('"', '')
+
+            
+            key_columns = self.run_query("""SELECT               
+                                                    pg_attribute.attname, 
+                                                    format_type(pg_attribute.atttypid, pg_attribute.atttypmod) 
+                                            FROM    pg_index, pg_class, pg_attribute, pg_namespace 
+                                            WHERE   1=1
+                                                    AND pg_class.oid = '{}'::regclass 
+                                                    AND indrelid = pg_class.oid 
+                                                    AND nspname = '{}' 
+                                                    AND pg_class.relnamespace = pg_namespace.oid 
+                                                    AND pg_attribute.attrelid = pg_class.oid 
+                                                    AND pg_attribute.attnum = any(pg_index.indkey)
+                                                    AND indisprimary""".format(table, table.split(".")[0])
+                                        , return_data = True)
+            key_columns = list(key_columns["attname"])
+
+            logger.info("Checking key data...")
+            for key in key_columns:
+                if key not in first_line.split(','): 
+                    raise KeyError("Key column {} is not available as in the data. Exiting...")
+
+
+            with open(filepath, 'r', encoding='utf-8') as f:
+                f.readline() 
+                ins_data = ''
+                for line in f:
+                    row = line.replace('"', '')
+                    row = row.split(',')
+                    ins_data += '(' + ("'{!s}', " * len(row)).format(*list(map(reg_sub, row)))[:-2] + '), '
+                ins_data = ins_data.replace('\'None\'', 'NULL').replace(' \'\',', ' NULL,').replace('\'\n\'', 'NULL')[:-2]
+
+            update_condition = ''
+            if conflict_resolution == 'new':
+                resolution = 'EXCLUDED'
+            elif conflict_resolution == 'old':
+                resolution = 'tb' 
+            
+            for column in first_line.split(','):
+                if column not in key_columns:
+                    update_condition += column + ' = ' + resolution + '.' + column + ','
+
+            basic_insert = "INSERT INTO {}.{} AS tb ({}) VALUES {} ON CONFLICT ({}) DO UPDATE SET {}"
+            basic_insert = basic_insert.format( table.split(".")[0],
+                                                table.split(".")[1],
+                                                first_line,
+                                                ins_data,
+                                                ','.join(key_columns), 
+                                                update_condition 
+                                                )
+            cur.execute(basic_insert[:-1]) 
+            cur.close()
+            self.connection.commit()
+            logger.info("Data has been UPSERTED.")  
+            return True 
+
+        except Exception as e:
+            issue = e 
+            print(basic_insert[:-1])
+            raise RuntimeError("Cannot UPSERT into PostgreSQL server due to: {}".format(issue))
+
+
+
     def disconnect(self):
         state = self.connection.close() 
         logger.info("Connection closed.")
