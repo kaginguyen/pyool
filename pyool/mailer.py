@@ -18,7 +18,7 @@ class Mailer:
 
         logger.info("Start setting up Mailer...")
 
-        server = smtplib.SMTP(
+        server = smtplib.SMTP_SSL(
         host = mail_server['host'], 
         port = mail_server['port']
         ) 
@@ -63,7 +63,7 @@ class Mailer:
         
 
         if mail_server['user']:
-            server.starttls()
+            # server.starttls()
             server.login(
                 mail_server['user'],
                 mail_server['pwd']
