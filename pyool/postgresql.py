@@ -182,12 +182,15 @@ class PostgreSQLConnector:
             cur.execute(basic_insert[:-1]) 
             cur.close()
             self.connection.commit()
-            logger.info("Data has been UPSERTED.")  
+            logger.info("Data has been UPSERTED.")
+            
+            if remove_file == True:
+                os.remove(filepath)   
+
             return True 
 
         except Exception as e:
             issue = e 
-            print(basic_insert[:-1])
             raise RuntimeError("Cannot UPSERT into PostgreSQL server due to: {}".format(issue))
 
 
